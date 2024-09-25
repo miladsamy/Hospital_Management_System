@@ -1,0 +1,75 @@
+ in view 
+-------------
+
+def View_Doctor(request):
+    if not request.user.is_staff:
+        return redirect('login')
+    doc=Doctor.objects.all()
+    d={
+        'doc':doc
+    }
+    return render(request,'view_doctor.html',d)
+
+def Delete_Doctor(request,pid):
+    if not request.user.is_staff:
+        return redirect('login')
+    doctor=Doctor.objects.get(id=pid)
+    doctor.delete()
+    return redirect('view_doctor.html')
+
+
+in view_doctor.html
+-------------------------
+
+{% include 'base.html' %}
+<div>
+    <h2>View Doctor</h2>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>DoctorId</th>
+                <th>Name</th>
+                <th>Moblie</th>
+                <th>Special</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in doc %}
+                <tr>
+                    <td>{{i.id}}</td>
+                    <td>{{i.Name}}</td>
+                    <td>{{i.mobile}}</td>
+                    <td>{{i.special}}</td>
+                    <td><a href="{% url 'delete_doctor' i.id %}" onclick="return confirm('Are you sure you want to delete?')" class="btn btn-danger">Delete</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+
+
+in url 
+-------------
+
+
+from django.urls import path
+from . import views
+
+urlpatterns=[
+    path('home',views.Home,name='home'),
+    path('about',views.About,name='about'),
+    path('contact',views.Contact,name='contact'),
+    path('admin_login',views.Login,name='admin_login'),
+    path('logout',views.Logout_admin,name='logout_admin'),
+    path('index',views.Index,name='dashboard'),
+    path('view_doctor',views.View_Doctor,name='view_doctor'),
+    path('delete_doctor(?P<int:pid>)',views.Delete_Doctor,name='delete_doctor'),
+    
+]
